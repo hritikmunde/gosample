@@ -1,0 +1,50 @@
+pipeline:
+  name: Go_deploy
+  identifier: Go_deploy
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Do_deploy_stage
+        identifier: Do_deploy_stage
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: WinRm
+          service:
+            serviceRef: WinRM_Service
+          environment:
+            environmentRef: Dev
+            deployToAll: false
+            infrastructureDefinitions: <+input>
+          execution:
+            steps:
+              - step:
+                  type: Command
+                  name: Command_1
+                  identifier: Command_1
+                  spec:
+                    onDelegate: false
+                    environmentVariables: []
+                    outputVariables: []
+                    commandUnits:
+                      - identifier: cmd
+                        name: cmd
+                        type: Script
+                        spec:
+                          shell: PowerShell
+                          source:
+                            type: Inline
+                            spec:
+                              script: ls
+                        shell: PowerShell
+                  timeout: 10m
+            rollbackSteps: []
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: PipelineRollback
